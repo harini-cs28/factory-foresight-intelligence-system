@@ -1,0 +1,10 @@
+[
+  "temperature_c",
+  "vibration_mm_s",
+  "motor_current_a",
+  "rpm",
+  "pressure_bar",
+  "load_percentage",
+  "operating_hours",
+  "maintenance_count"
+]

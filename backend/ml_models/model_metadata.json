@@ -1,0 +1,84 @@
+{
+  "model_version": "v1.0",
+  "features": [
+    "temperature_c",
+    "vibration_mm_s",
+    "motor_current_a",
+    "rpm",
+    "pressure_bar",
+    "load_percentage",
+    "operating_hours",
+    "maintenance_count"
+  ],
+  "target_failure": "failure_within_20_cycles",
+  "target_rul": "rul_cycles",
+  "failure_metrics": {
+    "accuracy": 0.9887820512820513,
+    "precision": 0.9671052631578947,
+    "recall": 0.9865771812080537,
+    "f1_score": 0.9767441860465116,
+    "roc_auc": 0.9990604026845638,
+    "confusion_matrix": [
+      [
+        470,
+        5
+      ],
+      [
+        2,
+        147
+      ]
+    ],
+    "classification_report": {
+      "0": {
+        "precision": 0.9957627118644068,
+        "recall": 0.9894736842105263,
+        "f1-score": 0.9926082365364308,
+        "support": 475.0
+      },
+      "1": {
+        "precision": 0.9671052631578947,
+        "recall": 0.9865771812080537,
+        "f1-score": 0.9767441860465116,
+        "support": 149.0
+      },
+      "accuracy": 0.9887820512820513,
+      "macro avg": {
+        "precision": 0.9814339875111507,
+        "recall": 0.98802543270929,
+        "f1-score": 0.9846762112914712,
+        "support": 624.0
+      },
+      "weighted avg": {
+        "precision": 0.9889198274777556,
+        "recall": 0.9887820512820513,
+        "f1-score": 0.988820186018806,
+        "support": 624.0
+      }
+    },
+    "feature_importances": {
+      "temperature_c": 0.13456166138684134,
+      "vibration_mm_s": 0.38359248334034846,
+      "motor_current_a": 0.07602979588021949,
+      "rpm": 0.02452319564457201,
+      "pressure_bar": 0.06758833382082508,
+      "load_percentage": 0.2922808000291419,
+      "operating_hours": 0.018996154849447514,
+      "maintenance_count": 0.0024275750486040778
+    }
+  },
+  "rul_metrics": {
+    "mae": 5.287692307692307,
+    "rmse": 7.9487290549963765,
+    "r2_score": 0.9868316779715716,
+    "feature_importances": {
+      "temperature_c": 0.0038699468584848305,
+      "vibration_mm_s": 0.9432803735120437,
+      "motor_current_a": 0.008728316150976459,
+      "rpm": 0.009041410029288866,
+      "pressure_bar": 0.017083925052733203,
+      "load_percentage": 0.005166258462900674,
+      "operating_hours": 0.012139113501685917,
+      "maintenance_count": 0.0006906564318863316
+    }
+  }
+}

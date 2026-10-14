@@ -1,0 +1,14 @@
+source_machine,target_machine,dependency_level,production_line
+SPIN-01,CARD-01,1,Line-A
+SPIN-02,CARD-01,1,Line-A
+CARD-01,DRAW-01,1,Line-A
+DRAW-01,RING-01,1,Line-A
+RING-01,WEAV-01,1,Line-B
+RING-01,WEAV-02,1,Line-B
+WEAV-01,WEAV-03,1,Line-B
+WEAV-02,WEAV-03,1,Line-B
+WEAV-03,DYE-01,1,Line-C
+WEAV-03,DYE-02,1,Line-C
+DYE-01,FIN-01,1,Line-C
+DYE-02,FIN-01,1,Line-C
+FIN-01,PACK-01,1,Line-C

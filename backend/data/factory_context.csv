@@ -1,0 +1,13 @@
+machine_id,process,production_line,criticality,production_priority,production_impact,technician_available,spare_part_available,estimated_repair_hours,estimated_repair_cost_inr,estimated_downtime_cost_per_hour_inr,maintenance_window,maintenance_type
+SPIN-01,Spinning,Line-A,HIGH,HIGH,HIGH,YES,YES,3.0,53832,81243,UNAVAILABLE,Predictive
+SPIN-02,Spinning,Line-A,MEDIUM,MEDIUM,MEDIUM,YES,YES,7.3,24951,65018,UNAVAILABLE,Preventive
+CARD-01,Carding,Line-A,HIGH,HIGH,HIGH,YES,NO,9.5,30953,48818,AVAILABLE,Preventive
+DRAW-01,Drawing,Line-A,MEDIUM,MEDIUM,MEDIUM,YES,YES,6.0,37269,53627,NEXT_SHIFT,Predictive
+RING-01,Ring Frame,Line-A,HIGH,HIGH,HIGH,YES,NO,2.2,12453,66575,NEXT_SHIFT,Predictive
+WEAV-01,Weaving,Line-B,HIGH,HIGH,HIGH,NO,YES,2.7,43901,85514,AVAILABLE,Preventive
+WEAV-02,Weaving,Line-B,CRITICAL,CRITICAL,VERY_HIGH,YES,YES,7.4,25722,87082,NEXT_SHIFT,Predictive
+WEAV-03,Weaving,Line-B,HIGH,HIGH,HIGH,YES,NO,7.8,35228,23882,PLANNED,Predictive
+DYE-01,Dyeing,Line-C,HIGH,HIGH,HIGH,YES,YES,3.3,41062,22240,PLANNED,Preventive
+DYE-02,Dyeing,Line-C,MEDIUM,MEDIUM,MEDIUM,NO,YES,5.6,17033,46070,PLANNED,Preventive
+FIN-01,Finishing,Line-C,HIGH,HIGH,HIGH,YES,YES,6.8,29224,42321,NEXT_SHIFT,Preventive
+PACK-01,Packing,Line-C,MEDIUM,MEDIUM,MEDIUM,YES,YES,5.1,42939,51062,NEXT_SHIFT,Predictive
