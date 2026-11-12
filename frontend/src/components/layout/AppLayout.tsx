@@ -1,13 +1,23 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
+import { useAuth } from "../../context/AuthContext";
+import { AssistantLauncher } from "../assistant/AssistantLauncher";
 
 interface AppLayoutProps {
   children?: React.ReactNode;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  // Assistant appears only in the Maintenance Engineer workspace
+  const isMaintenanceWorkspace =
+    user?.role === "MAINTENANCE_ENGINEER" ||
+    location.pathname.startsWith("/maintenance-engineer");
+
   return (
     <div className="flex h-screen bg-[#F8F9FA] text-[#1F2933] font-sans overflow-hidden">
       {/* Fixed Left Sidebar */}
@@ -23,6 +33,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </div>
         </main>
       </div>
+
+      {/* 3D AI Robot Maintenance Assistant Widget */}
+      {isMaintenanceWorkspace && <AssistantLauncher />}
     </div>
   );
 };

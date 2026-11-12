@@ -26,21 +26,14 @@ export const HeroSection: React.FC = () => {
           AI-powered manufacturing intelligence for predicting machine failures, understanding production impact, and making smarter maintenance decisions.
         </p>
 
-        {/* Direct CTA Buttons */}
-        <div className="flex flex-row items-center gap-3.5 pt-2">
+        {/* Primary CTA Button */}
+        <div className="pt-2">
           <Link
             to="/login"
             className="inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-3.5 rounded-xl text-xs sm:text-sm font-bold text-[#1F2933] bg-[#F4B400] hover:bg-[#D99A00] shadow-md shadow-[#F4B400]/25 transition-all transform hover:-translate-y-0.5"
           >
             <span>GET STARTED</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
-
-          <Link
-            to="/login"
-            className="inline-flex items-center justify-center px-7 sm:px-8 py-3.5 rounded-xl text-xs sm:text-sm font-semibold text-[#1F2933] bg-[#FFFFFF] hover:bg-[#FFFDF5] border border-[#E5E7EB] hover:border-[#D99A00]/50 transition-all shadow-xs"
-          >
-            <span>LOGIN</span>
           </Link>
         </div>
       </div>

@@ -7,14 +7,83 @@ import logging
 
 from app.models.alert import Alert
 from app.models.machine import Machine
+from app.models.prediction import Prediction
 from app.models.user import User
 from app.alerts.alert_engine import process_machine_alerts
 from app.iot.sensor_state import sensor_state_manager
 from app.ml.predictor import predict_machine_health
 from app.impact.cascade_analyzer import run_bfs_cascade_analysis
 from app.decision_engine.priority_engine import determine_maintenance_priority
+from app.services.impact_service import get_factory_context_data
 
 logger = logging.getLogger(__name__)
+
+
+def sync_alerts_with_current_predictions(db: Session) -> List[Alert]:
+    """
+    Evaluates current machine predictions stored in PostgreSQL against established operational thresholds:
+    - CRITICAL: Failure probability >= 0.70 OR RUL <= 15
+    - AT_RISK:  Failure probability >= 0.30 and < 0.70 OR RUL > 15 and <= 35
+    - HEALTHY:  Failure probability < 0.30 AND RUL > 35
+    Generates and persists alerts into PostgreSQL for degraded machines (CRITICAL / AT_RISK).
+    Deduplicates against active unacknowledged alerts to prevent duplicate alert generation.
+    """
+    stmt = select(Machine)
+    machines = db.execute(stmt).scalars().all()
+    created_total: List[Alert] = []
+
+    factory_context = get_factory_context_data()
+
+    for m in machines:
+        pred_stmt = (
+            select(Prediction)
+            .where(Prediction.machine_id == m.id)
+            .order_by(Prediction.created_at.desc())
+        )
+        latest_pred = db.execute(pred_stmt).scalars().first()
+        if not latest_pred:
+            continue
+
+        fail_prob = float(latest_pred.failure_probability)
+        rul_val = float(latest_pred.predicted_rul)
+        h_status = latest_pred.health_status
+
+        # Only generate operational alerts if machine is degraded (CRITICAL or AT_RISK or meets threshold)
+        is_critical = fail_prob >= 0.70 or rul_val <= 15
+        is_at_risk = (0.30 <= fail_prob < 0.70) or (15 < rul_val <= 35)
+
+        if not (is_critical or is_at_risk or h_status in ["CRITICAL", "AT_RISK"]):
+            continue
+
+        ctx = factory_context.get(m.machine_id, {})
+        crit = m.criticality or ctx.get("criticality", "MEDIUM")
+
+        cascade_count = 0
+        cascade_level = 0
+        try:
+            cascade_res = run_bfs_cascade_analysis(m.machine_id)
+            cascade_count = len(cascade_res.get("affected_machines", []))
+            cascade_level = cascade_res.get("max_cascade_level", 0)
+        except Exception:
+            pass
+
+        rec_urgency = "IMMEDIATE" if is_critical else "ROUTINE"
+
+        created = process_machine_alerts(
+            db=db,
+            machine_id_str=m.machine_id,
+            failure_probability=fail_prob,
+            predicted_rul=rul_val,
+            health_status=h_status,
+            criticality=crit,
+            cascade_affected_count=cascade_count,
+            cascade_max_level=cascade_level,
+            recommended_urgency=rec_urgency,
+            prediction_id=latest_pred.id
+        )
+        created_total.extend(created)
+
+    return created_total
 
 
 def get_all_alerts(
@@ -26,11 +95,22 @@ def get_all_alerts(
 ) -> List[Dict[str, Any]]:
     """
     Retrieves alerts with optional filtering by machine, severity, or acknowledged status.
+    Ensures active operational alerts are in sync with current machine prediction records.
     """
+    # Sync operational alerts with current prediction records if none exist
+    count_stmt = select(Alert)
+    existing_alerts_count = len(db.execute(count_stmt).scalars().all())
+    if existing_alerts_count == 0:
+        sync_alerts_with_current_predictions(db)
+
     stmt = (
         select(Alert)
         .join(Machine, Alert.machine_id == Machine.id)
-        .options(joinedload(Alert.machine), joinedload(Alert.acknowledged_by))
+        .options(
+            joinedload(Alert.machine),
+            joinedload(Alert.acknowledged_by),
+            joinedload(Alert.prediction)
+        )
         .order_by(desc(Alert.created_at))
     )
 
@@ -50,6 +130,9 @@ def get_all_alerts(
 
     alerts_data = []
     for a in results:
+        fail_prob = a.prediction.failure_probability if a.prediction else None
+        rul_val = a.prediction.predicted_rul if a.prediction else None
+
         alerts_data.append({
             "id": a.id,
             "machine_id": a.machine.machine_id if a.machine else f"M-{a.machine_id}",
@@ -65,6 +148,9 @@ def get_all_alerts(
             "created_at": a.created_at.isoformat() if a.created_at else None,
             "acknowledged_at": a.acknowledged_at.isoformat() if a.acknowledged_at else None,
             "acknowledged_by": a.acknowledged_by.name if a.acknowledged_by else None,
+            "failure_probability": fail_prob,
+            "predicted_rul": rul_val,
+            "triggering_condition": a.alert_type.replace("_", " "),
         })
 
     return alerts_data

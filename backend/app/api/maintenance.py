@@ -12,7 +12,8 @@ from app.schemas.maintenance import (
     RecommendationResponse,
     RecommendationHistoryItem,
     WorkOrderItem,
-    UpdateWorkOrderStatusRequest
+    UpdateWorkOrderStatusRequest,
+    CreateWorkOrderRequest
 )
 from app.services.auth_service import get_current_user, require_roles
 from app.services.decision_service import (
@@ -124,6 +125,60 @@ def list_work_orders(
     return result
 
 
+@router.post("/work-orders", response_model=WorkOrderItem, status_code=status.HTTP_201_CREATED)
+def create_work_order(
+    payload: CreateWorkOrderRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_roles("PLANT_MANAGER", "MAINTENANCE_ENGINEER", "ADMIN"))
+):
+    """
+    Submits a maintenance request or creates a work order in PostgreSQL.
+    Accessible to PLANT_MANAGER, MAINTENANCE_ENGINEER, and ADMIN.
+    Prevents duplicate active work orders for the same machine.
+    """
+    clean_id = payload.machine_id.strip()
+    machine = ensure_machine_exists(db, clean_id)
+
+    # Prevent duplicate active work orders (SCHEDULED or IN_PROGRESS)
+    dup_stmt = select(MaintenanceRecord).where(
+        MaintenanceRecord.machine_id == machine.id,
+        MaintenanceRecord.status.in_(["SCHEDULED", "IN_PROGRESS"])
+    )
+    existing_active = db.execute(dup_stmt).scalars().first()
+    if existing_active:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Active work order #{existing_active.id} ({existing_active.status}) already exists for machine {clean_id}."
+        )
+
+    desc_text = payload.description or f"{payload.maintenance_type or 'Preventive'} work order requested for {clean_id}."
+    new_record = MaintenanceRecord(
+        machine_id=machine.id,
+        maintenance_type=payload.maintenance_type or "Preventive",
+        description=desc_text,
+        status="SCHEDULED",
+        scheduled_at=payload.scheduled_at or datetime.now(timezone.utc),
+        created_at=datetime.now(timezone.utc)
+    )
+    db.add(new_record)
+    db.commit()
+    db.refresh(new_record)
+
+    return WorkOrderItem(
+        id=new_record.id,
+        machine_id=machine.machine_id,
+        process=machine.process,
+        production_line=machine.production_line,
+        criticality=machine.criticality,
+        maintenance_type=new_record.maintenance_type,
+        description=new_record.description,
+        status=new_record.status,
+        scheduled_at=new_record.scheduled_at,
+        completed_at=new_record.completed_at,
+        created_at=new_record.created_at
+    )
+
+
 @router.patch("/work-orders/{record_id}/status", response_model=WorkOrderItem)
 def update_work_order_status(
     record_id: int,
@@ -209,3 +264,5 @@ def get_maintenance_history(
             )
         )
     return result
+
+

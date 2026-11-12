@@ -23,6 +23,9 @@ export interface AlertItem {
   created_at?: string | null;
   acknowledged_at?: string | null;
   acknowledged_by?: string | null;
+  failure_probability?: number | null;
+  predicted_rul?: number | null;
+  triggering_condition?: string | null;
 }
 
 export interface AlertAcknowledgeResponse {

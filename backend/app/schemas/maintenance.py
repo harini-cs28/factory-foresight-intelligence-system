@@ -65,3 +65,11 @@ class WorkOrderItem(BaseModel):
 class UpdateWorkOrderStatusRequest(BaseModel):
     status: str
 
+
+class CreateWorkOrderRequest(BaseModel):
+    machine_id: str
+    maintenance_type: Optional[str] = "Corrective"
+    description: Optional[str] = None
+    scheduled_at: Optional[datetime] = None
+
+

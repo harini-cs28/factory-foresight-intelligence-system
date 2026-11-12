@@ -58,8 +58,11 @@ export const AlertCard: React.FC<AlertCardProps> = ({
       {/* Card Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
         <div className="flex flex-wrap items-center gap-2.5">
+          <span className="text-xs font-mono font-bold text-[#667085] bg-gray-100 px-2 py-0.5 rounded-md">
+            #{alert.id}
+          </span>
           <Link
-            to={`/intelligence/${alert.machine_id}`}
+            to={`/plant-manager/machines/${alert.machine_id}`}
             className="text-base font-extrabold font-mono text-[#1F2933] hover:text-[#D99A00] transition-colors"
           >
             {alert.machine_id}
@@ -71,6 +74,34 @@ export const AlertCard: React.FC<AlertCardProps> = ({
         <div className="flex items-center gap-1.5 text-xs text-[#667085]">
           <Clock size={12} />
           <span>{formatTime(alert.created_at)}</span>
+        </div>
+      </div>
+
+      {/* Operational Trigger & Metrics Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 text-xs">
+        <div className="p-2 rounded-lg bg-[#FFFDF5] border border-[#E5E7EB]">
+          <span className="text-[10px] text-[#667085] block font-mono">Trigger Condition</span>
+          <strong className="text-[#1F2933] font-mono text-[11px] truncate block">
+            {alert.triggering_condition || alert.alert_type.replace(/_/g, " ")}
+          </strong>
+        </div>
+        <div className="p-2 rounded-lg bg-[#FFFDF5] border border-[#E5E7EB]">
+          <span className="text-[10px] text-[#667085] block font-mono">Failure Risk</span>
+          <strong className={`font-mono text-[11px] ${isCritical ? "text-[#EF4444]" : "text-[#D99A00]"}`}>
+            {alert.failure_probability != null ? `${Math.round(alert.failure_probability * 100)}%` : "Elevated"}
+          </strong>
+        </div>
+        <div className="p-2 rounded-lg bg-[#FFFDF5] border border-[#E5E7EB]">
+          <span className="text-[10px] text-[#667085] block font-mono">Remaining RUL</span>
+          <strong className="text-[#1F2933] font-mono text-[11px]">
+            {alert.predicted_rul != null ? `${alert.predicted_rul.toFixed(1)} cyc` : "Critical"}
+          </strong>
+        </div>
+        <div className="p-2 rounded-lg bg-[#FFFDF5] border border-[#E5E7EB]">
+          <span className="text-[10px] text-[#667085] block font-mono">Severity</span>
+          <strong className={`font-mono text-[11px] ${isCritical ? "text-rose-700" : "text-amber-700"}`}>
+            {alert.severity}
+          </strong>
         </div>
       </div>
 
@@ -115,15 +146,15 @@ export const AlertCard: React.FC<AlertCardProps> = ({
 
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <Link
-            to={`/intelligence/${alert.machine_id}`}
+            to={`/plant-manager/machines/${alert.machine_id}`}
             className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#FFFFFF] hover:bg-[#FFF3C4] text-xs font-semibold text-[#1F2933] border border-[#E5E7EB] hover:border-[#F4B400] transition-all shadow-xs"
           >
             <Cpu size={12} className="text-[#D99A00]" />
-            <span>Diagnose</span>
+            <span>View Machine</span>
           </Link>
 
           <Link
-            to={`/maintenance/${alert.machine_id}`}
+            to={`/plant-manager/maintenance-priorities?machineId=${alert.machine_id}&action=work-order`}
             className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#FFFFFF] hover:bg-[#FFF3C4] text-xs font-semibold text-[#1F2933] border border-[#E5E7EB] hover:border-[#F4B400] transition-all shadow-xs"
           >
             <Wrench size={12} className="text-[#D99A00]" />

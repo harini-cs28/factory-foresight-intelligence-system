@@ -53,3 +53,11 @@ export interface WorkOrderItem {
   created_at: string;
 }
 
+export interface CreateWorkOrderRequest {
+  machine_id: string;
+  maintenance_type?: string;
+  description?: string;
+  scheduled_at?: string;
+}
+
+

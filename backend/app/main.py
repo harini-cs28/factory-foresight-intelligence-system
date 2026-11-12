@@ -18,6 +18,7 @@ from app.api.admin import router as admin_router
 from app.api.sensors import router as sensors_router
 from app.api.explainability import router as explainability_router
 from app.api.alerts import router as alerts_router
+from app.api.assistant import router as assistant_router
 from app.ml.model_loader import load_models
 from app.iot.sensor_simulator import sensor_simulator
 
@@ -39,6 +40,16 @@ async def lifespan(app: FastAPI):
         logger.info("ML models preloaded successfully during startup.")
     except Exception as e:
         logger.warning(f"ML models could not be loaded during startup: {e}")
+
+    # Synchronize operational alerts with current prediction records
+    try:
+        from app.database.session import SessionLocal
+        from app.alerts.alert_service import sync_alerts_with_current_predictions
+        with SessionLocal() as db:
+            sync_alerts_with_current_predictions(db)
+            logger.info("Operational alerts synchronized on startup.")
+    except Exception as e:
+        logger.warning(f"Startup alert synchronization warning: {e}")
 
     # Start background sensor simulation
     try:
@@ -83,6 +94,7 @@ app.include_router(admin_router, prefix=settings.API_V1_PREFIX)
 app.include_router(sensors_router, prefix=settings.API_V1_PREFIX)
 app.include_router(explainability_router, prefix=settings.API_V1_PREFIX)
 app.include_router(alerts_router, prefix=settings.API_V1_PREFIX)
+app.include_router(assistant_router, prefix=settings.API_V1_PREFIX)
 
 
 @app.get("/api/health", tags=["Health"])

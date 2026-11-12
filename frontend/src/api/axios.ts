@@ -31,8 +31,8 @@ apiClient.interceptors.response.use(
       // Clear token on 401
       localStorage.removeItem("ffis_token");
       localStorage.removeItem("ffis_user");
-      // Only redirect if not already on /login
-      if (window.location.pathname !== "/login") {
+      // Only redirect to login if currently on a protected route (not on /login or /)
+      if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
         window.location.href = "/login";
       }
     }

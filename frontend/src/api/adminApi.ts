@@ -5,7 +5,19 @@ import {
   ModelsAndServicesResponse,
   SystemConfigurationResponse,
   AuditLogItem,
+  AuditLogsResponse,
 } from "../types/admin";
+
+export interface AuditLogFilters {
+  page?: number;
+  pageSize?: number;
+  startDate?: string;
+  endDate?: string;
+  userFilter?: string;
+  roleFilter?: string;
+  actionType?: string;
+  resultStatus?: string;
+}
 
 export const adminApi = {
   getUsers: async (): Promise<User[]> => {
@@ -51,9 +63,28 @@ export const adminApi = {
     return response.data;
   },
 
-  getAuditLogs: async (limit: number = 50): Promise<AuditLogItem[]> => {
-    const response = await apiClient.get<AuditLogItem[]>("/api/admin/audit-logs", {
-      params: { limit },
+  getAuditLogs: async (
+    filtersOrLimit?: number | AuditLogFilters
+  ): Promise<AuditLogsResponse> => {
+    let params: Record<string, any> = {};
+
+    if (typeof filtersOrLimit === "number") {
+      params = { page_size: filtersOrLimit, page: 1 };
+    } else if (filtersOrLimit) {
+      params = {
+        page: filtersOrLimit.page || 1,
+        page_size: filtersOrLimit.pageSize || 20,
+        start_date: filtersOrLimit.startDate || undefined,
+        end_date: filtersOrLimit.endDate || undefined,
+        user_filter: filtersOrLimit.userFilter || undefined,
+        role_filter: filtersOrLimit.roleFilter || undefined,
+        action_type: filtersOrLimit.actionType || undefined,
+        result_status: filtersOrLimit.resultStatus || undefined,
+      };
+    }
+
+    const response = await apiClient.get<AuditLogsResponse>("/api/admin/audit-logs", {
+      params,
     });
     return response.data;
   },

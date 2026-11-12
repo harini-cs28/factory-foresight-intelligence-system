@@ -369,7 +369,7 @@ export const PlantManagerDashboard: React.FC<PlantManagerDashboardProps> = ({
           </div>
 
           <Link
-            to="/factory"
+            to="/plant-manager/machines"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1F2933] hover:text-[#D99A00] transition-colors"
           >
             <span>View All Machines</span>

@@ -2,10 +2,11 @@ import React from "react";
 import { LandingNavbar } from "./LandingNavbar";
 import { HeroSection } from "./HeroSection";
 import { LandingFooter } from "./LandingFooter";
+import { AssistantLauncher } from "../assistant/AssistantLauncher";
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="h-screen max-h-screen w-screen overflow-hidden flex flex-col justify-between bg-[#FFFFFF] text-[#1F2933] font-sans selection:bg-[#FFF3C4] selection:text-[#1F2933] m-0 p-0">
+    <div className="h-screen max-h-screen w-screen overflow-hidden flex flex-col justify-between bg-[#FFFFFF] text-[#1F2933] font-sans selection:bg-[#FFF3C4] selection:text-[#1F2933] m-0 p-0 relative">
       {/* 1. Flat White Top Navbar (72px) */}
       <LandingNavbar />
 
@@ -16,6 +17,9 @@ export const LandingPage: React.FC = () => {
 
       {/* 3. Minimal Bottom Footer (42px) */}
       <LandingFooter />
+
+      {/* 4. 3D AI Robot Maintenance Assistant */}
+      <AssistantLauncher />
     </div>
   );
 };

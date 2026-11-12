@@ -17,6 +17,9 @@ class AlertResponse(BaseModel):
     created_at: Optional[str] = None
     acknowledged_at: Optional[str] = None
     acknowledged_by: Optional[str] = None
+    failure_probability: Optional[float] = None
+    predicted_rul: Optional[float] = None
+    triggering_condition: Optional[str] = None
 
 
 class AlertAcknowledgeResponse(BaseModel):
@@ -26,6 +29,9 @@ class AlertAcknowledgeResponse(BaseModel):
     message: str
     acknowledged_at: Optional[str] = None
     acknowledged_by: Optional[str] = None
+    failure_probability: Optional[float] = None
+    predicted_rul: Optional[float] = None
+    triggering_condition: Optional[str] = None
 
 
 class AlertSummaryResponse(BaseModel):

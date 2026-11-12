@@ -3,6 +3,7 @@ import {
   RecommendationResponse,
   RecommendationHistoryItem,
   WorkOrderItem,
+  CreateWorkOrderRequest,
 } from "../types/maintenance";
 
 
@@ -28,6 +29,11 @@ export const maintenanceApi = {
     return response.data;
   },
 
+  createWorkOrder: async (data: CreateWorkOrderRequest): Promise<WorkOrderItem> => {
+    const response = await apiClient.post<WorkOrderItem>("/api/maintenance/work-orders", data);
+    return response.data;
+  },
+
   updateWorkOrderStatus: async (
     recordId: number,
     status: string
@@ -46,4 +52,5 @@ export const maintenanceApi = {
     return response.data;
   },
 };
+
 

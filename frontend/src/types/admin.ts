@@ -64,9 +64,25 @@ export interface SystemConfigurationResponse {
 export interface AuditLogItem {
   id: string;
   timestamp: string;
-  category: "USER_MANAGEMENT" | "ALERT_GOVERNANCE" | "INFERENCE_EVENT" | "MAINTENANCE" | string;
+  category: string;
+  action_type?: string;
   actor: string;
+  user_id?: number | null;
+  user_email?: string | null;
+  user_role?: string;
+  resource_type?: string;
+  resource_id?: string | null;
   action: string;
   details: string;
+  description?: string;
+  result_status?: "SUCCESS" | "FAILURE" | string;
   severity: "INFO" | "WARNING" | "CRITICAL";
+}
+
+export interface AuditLogsResponse {
+  items: AuditLogItem[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }

@@ -5,6 +5,7 @@ from app.models.machine_dependency import MachineDependency
 from app.models.prediction import Prediction
 from app.models.maintenance import MaintenanceRecord, MaintenanceRecommendation
 from app.models.alert import Alert
+from app.models.audit_log import AuditLog
 
 __all__ = [
     "Base",
@@ -16,4 +17,5 @@ __all__ = [
     "MaintenanceRecord",
     "MaintenanceRecommendation",
     "Alert",
+    "AuditLog",
 ]

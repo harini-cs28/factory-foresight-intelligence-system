@@ -12,6 +12,12 @@ from app.schemas.maintenance import (
     RecommendationResponse,
     RecommendationHistoryItem,
 )
+from app.schemas.assistant import (
+    AssistantChatRequest,
+    AssistantChatResponse,
+    AssistantSourceData,
+    QuickQuestionItem,
+)
 
 __all__ = [
     "LoginRequest",
@@ -28,4 +34,8 @@ __all__ = [
     "DecisionFactors",
     "RecommendationResponse",
     "RecommendationHistoryItem",
+    "AssistantChatRequest",
+    "AssistantChatResponse",
+    "AssistantSourceData",
+    "QuickQuestionItem",
 ]
